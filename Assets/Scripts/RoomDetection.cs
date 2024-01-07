@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using System.Linq;
 
-public class WallDetection : MonoBehaviour
+public class RoomDetection : MonoBehaviour
 {
     [Header("Post Processing")]
     public Volume _volume;
@@ -22,20 +19,19 @@ public class WallDetection : MonoBehaviour
 
     [Header("Collider Depth")]
     public Collider targetCollider;
-    //[SerializeField]private List<Collider> colliders = new List<Collider>();
-    //private float[] distances = new float[3];
     [SerializeField] private bool isEntered;
-    private Collider bodyCollider;
-    private Collider leftHandCollider;
-    private Collider rightHandCollider;
-    private float bodyDistance;
-    private float leftHandDistance;
-    private float rightHandDistance;
+    [SerializeField] private Collider bodyCollider;
+    [SerializeField] private Collider leftHandCollider;
+    [SerializeField] private Collider rightHandCollider;
+    [SerializeField] private float bodyDistance;
+    [SerializeField] private float leftHandDistance;
+    [SerializeField] private float rightHandDistance;
 
     [Header("VFX parameters")]
-    public float maxValue;
+    public float minValue;
+    public float safeValue;
     [SerializeField] [Range(0, 1)] private float para = 0;
-    [SerializeField] private float maxPenetrationDepth;
+    [SerializeField] private float minPenetrationDepth;
 
     [Header("Controller Vibration")]
     public int iteration;
@@ -64,11 +60,8 @@ public class WallDetection : MonoBehaviour
 
     void Update()
     {
-        if (isEntered)
-        {
-            CalculateMultipleCollisionDepth();
-            DataMatching();
-        }
+        CalculateMultipleCollisionDepth();
+        DataMatching();
 
         if (OVRInput.GetDown(OVRInput.Button.One))
         {
@@ -80,22 +73,16 @@ public class WallDetection : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (GameManager.instance.triedGoOut == false)
-                GameManager.instance.triedGoOut = true;
-
-            //colliders.Add(other);
             bodyCollider = other;
             CheckStatus();
         }
         else if (other.CompareTag("LeftHand"))
         {
-            //colliders.Add(other);
             leftHandCollider = other;
             CheckStatus();
         }
         else if (other.CompareTag("RightHand"))
         {
-            //colliders.Add(other);
             rightHandCollider = other;
             CheckStatus();
         }
@@ -105,25 +92,22 @@ public class WallDetection : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //colliders.Remove(other);
             bodyCollider = null;
             bodyDistance = 0;
             CheckStatus();
         }
-        else if (other.CompareTag("LeftHand"))
-        {
-            //colliders.Remove(other);
-            leftHandCollider = null;
-            leftHandDistance = 0;
-            CheckStatus();
-        }
-        else if (other.CompareTag("RightHand"))
-        {
-            //colliders.Remove(other);
-            rightHandCollider = null;
-            rightHandDistance = 0;
-            CheckStatus();
-        }
+        //else if (other.CompareTag("LeftHand"))
+        //{
+        //    leftHandCollider = null;
+        //    leftHandDistance = 0;
+        //    CheckStatus();
+        //}
+        //else if (other.CompareTag("RightHand"))
+        //{
+        //    rightHandCollider = null;
+        //    rightHandDistance = 0;
+        //    CheckStatus();
+        //}
     }
 
     private void CheckStatus()
@@ -134,7 +118,7 @@ public class WallDetection : MonoBehaviour
         {
             isEntered = false;
             //reset collider data
-            maxPenetrationDepth = 0;
+            minPenetrationDepth = safeValue + 1;
             //reset para data (for post processing)
             para = 0;
             //reset voice data
@@ -154,13 +138,20 @@ public class WallDetection : MonoBehaviour
 
     private void DataMatching()
     {
-        if (maxPenetrationDepth > 0 && maxPenetrationDepth < maxValue)
+        if (minPenetrationDepth < safeValue && minPenetrationDepth > minValue)
         {
-            para = maxPenetrationDepth / maxValue;
+            para = 1 - (minPenetrationDepth - minValue) / (safeValue - minValue);
+
+            if (GameManager.instance.triedGoOut == false)
+                GameManager.instance.triedGoOut = true;
         }
-        else if (maxPenetrationDepth > maxValue)
+        else if (minPenetrationDepth < minValue)
         {
             para = 1;
+        }
+        else
+        {
+            para = 0;
         }
 
         //post processing data
@@ -222,19 +213,20 @@ public class WallDetection : MonoBehaviour
         //    }
         //}
 
-        maxPenetrationDepth = Mathf.Max(bodyDistance, leftHandDistance, rightHandDistance);
+        //minPenetrationDepth = Mathf.Min(bodyDistance, leftHandDistance, rightHandDistance);
+        minPenetrationDepth = bodyDistance;
     }
 
     private void ControllerVibrationIndependently()
     {
-        float leftPara = leftHandDistance < maxValue ? leftHandDistance / maxValue : 1;
+        float leftPara = leftHandDistance < minValue ? leftHandDistance / minValue : 1;
         if (leftHandCollider != null)
         {
             VibrationManager.instance.TriggerVibration(iteration, frequency,
                 Mathf.RoundToInt(maxStrength * leftPara), OVRInput.Controller.LTouch);
         }
 
-        float rightPara = rightHandDistance < maxValue ? rightHandDistance / maxValue : 1;
+        float rightPara = rightHandDistance < minValue ? rightHandDistance / minValue : 1;
         if (rightHandCollider != null)
         {
             VibrationManager.instance.TriggerVibration(iteration, frequency,
@@ -256,5 +248,21 @@ public class WallDetection : MonoBehaviour
 
         whisper1.RotateAround(player.position, transform.up, orbitSpeed1 * Time.deltaTime);
         whisper2.RotateAround(player.position, transform.up, orbitSpeed2 * Time.deltaTime);
+    }
+
+    public Vector3 reducedSize = new Vector3(1f, 1f, 1f); // 要减少的尺寸
+
+    private void OnDrawGizmosSelected()
+    {
+        BoxCollider boxCollider = GetComponent<BoxCollider>();
+
+        Vector3 size = boxCollider.size;
+        Vector3 newSize = new Vector3(size.x - reducedSize.x, size.y - reducedSize.y, size.z - reducedSize.z);
+
+        Vector3 center = transform.TransformPoint(boxCollider.center);
+
+        // 绘制线框
+        Gizmos.color = Color.red; // 设置线框颜色
+        Gizmos.DrawWireCube(center, newSize);
     }
 }

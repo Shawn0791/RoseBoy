@@ -19,8 +19,8 @@ TagManager:
   - 
   - 
   - 
-  - SelectedTarget
-  - Targetable
+  - 
+  - InvisibleWall
   - Player
   - Body
   - Items
