@@ -422,7 +422,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &37660341
 Transform:
   m_ObjectHideFlags: 0
@@ -569,7 +569,7 @@ MonoBehaviour:
   leftHandDistance: 0
   rightHandDistance: 0
   minValue: 0.3
-  safeValue: 0.5
+  safeValue: 0.7
   para: 0
   minPenetrationDepth: 0
   iteration: 120
@@ -1254,7 +1254,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.243, y: 1.21}
+  m_AnchoredPosition: {x: 0.193, y: 1.142}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!65 &153681056
@@ -22189,7 +22189,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 32
   raycastInterval: 0.1
-  timerThreshold: 2
+  timerThreshold: 1
   timeline02: {fileID: 532204335}
 --- !u!1 &7692530965793656247
 GameObject:
