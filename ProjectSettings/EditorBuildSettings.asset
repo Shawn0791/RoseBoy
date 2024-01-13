@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Start Scene.unity
     guid: fee0e98ae9785c24897daeb61ecd5e51
   - enabled: 1
-    path: Assets/Scenes/Rose.unity
-    guid: 092b4b3d7d69d0244bd32f367026b9dc
+    path: Assets/Scenes/Rose_new.unity
+    guid: 63780a51634b50d42834f6e38e7801e5
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: aeaeff832f4393b4bbccc97e84ba919f, type: 2}
     Unity.XR.PICO.LivePreview.Settings: {fileID: 11400000, guid: 61bd43c22f1e96140af46794d7a7fc7a, type: 2}

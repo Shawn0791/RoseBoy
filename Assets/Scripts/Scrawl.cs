@@ -55,6 +55,15 @@ public class Scrawl : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Pen"))
+        {
+            if (penDrawAudio.isPlaying)
+                penDrawAudio.Pause();
+        }
+    }
+
     private void Update()
     {
         if (OVRInput.GetDown(OVRInput.Button.One))
@@ -106,14 +115,14 @@ public class Scrawl : MonoBehaviour
             elapsedTimer2 += Time.deltaTime;
 
             float strength = Mathf.Lerp(0, 1, elapsedTimer2 / dissolveDuration);
-            //mats[1].SetFloat("_Dissolve", strength);
+            mats[1].SetFloat("_Dissolve", strength);
             mats[2].SetFloat("_Dissolve", strength);
             mats[3].SetFloat("_Dissolve", strength);
             mats[4].SetFloat("_Dissolve", strength);
             mats[5].SetFloat("_Dissolve", strength);
             mats[6].SetFloat("_Dissolve", strength);
-            mats[7].SetFloat("_Dissolve", strength);
-            mats[8].SetFloat("_Dissolve", strength);
+            //mats[7].SetFloat("_Dissolve", strength);
+            //mats[8].SetFloat("_Dissolve", strength);
 
             yield return null;
         }
