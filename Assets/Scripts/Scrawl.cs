@@ -11,6 +11,7 @@ public class Scrawl : MonoBehaviour
     public GameObject lighting;
     public GameObject toilet;
     public Animator whiteAnimator;
+    public float restartTime;
     private bool isDissolving;
     public float penSpeedMin;
     public float penValueMax;
@@ -109,6 +110,7 @@ public class Scrawl : MonoBehaviour
         }
 
         float elapsedTimer2 = 0;
+        whiteAnimator.SetTrigger("white");
 
         while (elapsedTimer2 < dissolveDuration)
         {
@@ -128,10 +130,9 @@ public class Scrawl : MonoBehaviour
         }
 
         toilet.SetActive(false);
-        whiteAnimator.SetTrigger("white");
 
         ResetMats();
-        Invoke("RestartGame", 1);
+        Invoke("RestartGame", restartTime);
     }
 
     private void ResetMats()
