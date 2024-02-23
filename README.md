@@ -4,3 +4,5 @@ Bullying stories always happen in the memories of teenagers' school lives. In to
 
 "Rose Boy" is an integrated VR escape room with puzzle game. At the beginning of the experience, the player is chased and locked in a toilet cubicle by bullies from classmates. The player can hear the taunts of their classmates outside the cubicle. Can the player successfully escape the toilet by the end of the game?
 
+## [Project Video](https://youtu.be/14UvsPB_CxA?si=Ccvmh1GwwY-Lq405)
+Click on the title to view the video.
